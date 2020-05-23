@@ -15,7 +15,7 @@ export function geometry() {
     return {
         // 在上面
         above(unit1, unit2) {
-            const { x1, y1, w1, h1, x2, y2, w2, h2 } = getData(unit1, unit2)
+            const { x1, y1, w1, h1, x2, y2, w2 } = getData(unit1, unit2)
 
             if (y1 + h1 <= y2 && x1 + w1 >= x2 && x1 <= x2 + w2) {
                 return true
@@ -70,7 +70,7 @@ export function geometry() {
         },
         // 在右边
         onRight(unit1, unit2) {
-            const { x1, y1, w1, h1, x2, y2, w2, h2 } = getData(unit1, unit2)
+            const { x1, y1, h1, x2, y2, w2, h2 } = getData(unit1, unit2)
 
             if (x1 >= x2 + w2 && y1 + h1 >= y2 && y1 <= y2 + h2) {
                 return true
@@ -79,7 +79,7 @@ export function geometry() {
         },
         // 在左边
         onLeft(unit1, unit2) {
-            const { x1, y1, w1, h1, x2, y2, w2, h2 } = getData(unit1, unit2)
+            const { x1, y1, w1, h1, x2, y2, h2 } = getData(unit1, unit2)
 
             if (x1 + w1 <= x2 && y1 + h1 >= y2 && y1 <= y2 + h2) {
                 return true
@@ -100,7 +100,7 @@ export function geometry() {
         },
         // 在下面
         under(unit1, unit2) {
-            const { x1, y1, w1, h1, x2, y2, w2, h2 } = getData(unit1, unit2)
+            const { x1, y1, w1, x2, y2, w2, h2 } = getData(unit1, unit2)
 
             if (y1 >= y2 + h2 && x1 + w1 >= x2 && x1 <= x2 + w2) {
                 return true

@@ -22,12 +22,27 @@ export class Sprite {
         const config = options.config
 
         // 设置初始参数
-        this.id = config.id
+        // id 为单位主键，唯一且不可修改
+        Object.defineProperty(this, 'id', {
+            value: config.id
+        })
+
+        // x 为单位横坐标
         this.x = config.x || 0
+
+        // y 为单位纵坐标
         this.y = config.y || 0
+
+        // width 为单位宽度
         this.width = config.width || 0
+
+        // height 为单位高度
         this.height = config.height || 0
+        
+        // offsetLeft 为单位横向偏移量
         this.offsetLeft = config.offsetLeft || 0
+
+        // offsetTop 为单位纵向偏移量
         this.offsetTop = config.offsetTop || 0
 
         // global 决定是否为全局单位
@@ -39,16 +54,16 @@ export class Sprite {
         // scale 决定实际绘制尺寸
         this.scale = config.scale == null ? 1 : config.scale
 
-        // direction 决定图片的左右位置
+        // direction 决定图片的方向
         this.direction = config.direction || 'right'
 
-        // layer 决定图片上下关系
+        // layer 决定图片上下关系，layer越大，单位越晚渲染
         this.layer = config.layer || 0
 
         // diasabled 为true时无法执行单位事件和用户事件
         this.disabled = config.disabled || false
 
-        // fixed
+        // fixed 为单位固定参数
         // 为0时随镜头移动
         // 为1时固定在页面上，不会随镜头移动
         // 在0~1之间会出现分层移动效果

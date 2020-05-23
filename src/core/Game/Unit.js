@@ -1,5 +1,3 @@
-import { Sprite } from "../Sprite/Sprite.js"
-
 export function unit(Game) {
     let units = {}
     // 图层数组
@@ -60,9 +58,6 @@ export function unit(Game) {
 
             return newUnit
         },
-        create(options) {
-            new Sprite(options)
-        },
         // 删除
         del(id) {
             const unit = units[id]
@@ -86,8 +81,8 @@ export function unit(Game) {
             unit.destroyed && unit.destroyed()
         },
         // 删除所有
-        delAll(boolean) {
-            if (boolean) {
+        delAll(includeGlobal) {
+            if (includeGlobal) {
                 for (const key in units) {
                     this.del(key)
                 }

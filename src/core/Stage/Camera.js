@@ -12,7 +12,6 @@ export function camera(stage) {
     let createMovement = (x, y, time, callback, disable = true) => {
         // 计算数据
         let frames = time * Game.frames || 1
-
         let perX = x / frames
         let perY = y / frames
 
@@ -23,27 +22,29 @@ export function camera(stage) {
         // 取消相机跟随
         camera.follow = null
 
-        const sw = stage.width
-        const gw = Game.width
+        // 定义常量
+        const STAGE_WIDTH = stage.width
+        const GAME_WIDTH = Game.width
 
         // 调整相机位置
         if (camera.x < 0) {
             camera.x = 0
         }
-        if (camera.x > sw - gw) {
-            camera.x = sw - gw
+        if (camera.x > STAGE_WIDTH - GAME_WIDTH) {
+            camera.x = STAGE_WIDTH - GAME_WIDTH
         }
 
         // 移动计数
         let count = 0
 
-        // 禁用精灵
+        // 禁用单位
         if (disable === true) {
             Game.unit.travel(unit => {
                 unit.disabled = true
             })
         }
 
+        // 修改镜头移动函数
         camera.movement = () => {
             // 相机移动
             camera.x += perX
@@ -53,7 +54,7 @@ export function camera(stage) {
             count++
 
             // 判断移动计数和相机位置
-            if (count > frames || (camera.x <= 0 || camera.x >= sw - gw)) {
+            if (count > frames || (camera.x <= 0 || camera.x >= STAGE_WIDTH - GAME_WIDTH)) {
                 // 清空相机移动函数
                 camera.movement = null
 
@@ -72,7 +73,7 @@ export function camera(stage) {
     }
 
     // 计算镜头位置
-    let cal = () => {
+    let cameraCal = () => {
         const follow = camera.follow
         // 当相机跟随精灵时
         if (follow) {
@@ -127,7 +128,7 @@ export function camera(stage) {
         // 获取镜头数据
         get() {
             // 计算镜头数据
-            cal()
+            cameraCal()
             // 返回镜头数据(只读)
             return Object.assign({}, camera)
         },
@@ -137,6 +138,7 @@ export function camera(stage) {
         },
         // 移动到
         moveTo(unit, time, callback) {
+            // 边界计算
             const { x, y } = borderCal(unit)
 
             createMovement((x - camera.x), (y - camera.y), time, callback)

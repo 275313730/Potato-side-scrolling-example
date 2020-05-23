@@ -77,10 +77,10 @@ export function normal() {
             new Sprite(touch())
 
             // 添加场景事件
-            this.event.add(collie, newPlayer, blocks)
-            this.event.add(gravity, newPlayer, blocks)
-            this.event.add(hit(newPlayer))
-            this.event.add(deadCheck)
+            this.event.add('collie', collie, newPlayer, blocks)
+            this.event.add('gravity', gravity, newPlayer, blocks)
+            this.event.add('hit', hit(newPlayer))
+            this.event.add('deadCheck', deadCheck)
         }
     }
 }

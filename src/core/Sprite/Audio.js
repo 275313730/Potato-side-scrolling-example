@@ -19,11 +19,7 @@ export function audio(unit) {
                 const range = music.range
                 const audio = music.audio
 
-                if (distance >= range) {
-                    audio.volume = 0
-                } else {
-                    audio.volume = music.defalutVolume * ((range - distance) / range)
-                }
+                setVolume(audio, range, music.defalutVolume, distance)
             }
 
             for (let i = 0; i < sounds.length; i++) {
@@ -38,11 +34,15 @@ export function audio(unit) {
                     continue
                 }
 
+                setVolume(audio, range, sound.defalutVolume, distance)
+            }
+
+            function setVolume(audio, range, defalutVolume, distance) {
                 if (range) {
                     if (distance >= range) {
                         audio.volume = 0
                     } else {
-                        audio.volume = sound.defalutVolume * ((range - distance) / range)
+                        audio.volume = defalutVolume * ((range - distance) / range)
                     }
                 }
             }

@@ -30,13 +30,12 @@ export function asset(imagePath, audioPath) {
                 const image = new Image()
                 image.src = imagePath + url
 
-                const newPromise = new Promise(resolve => {
+                loadings.push(new Promise(resolve => {
                     image.onload = () => {
                         assets[group][name] = image
                         resolve(true)
                     }
-                })
-                loadings.push(newPromise)
+                }))
                 return
             }
 
@@ -44,7 +43,7 @@ export function asset(imagePath, audioPath) {
                 const image = new Image()
                 image.src = imagePath + url
 
-                const newPromise = new Promise(resolve => {
+                loadings.push(new Promise(resolve => {
                     image.onload = () => {
                         assets[group][name] = {
                             image,
@@ -54,8 +53,7 @@ export function asset(imagePath, audioPath) {
                         }
                         resolve(true)
                     }
-                })
-                loadings.push(newPromise)
+                }))
                 return
             }
 
