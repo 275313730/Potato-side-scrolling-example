@@ -1,5 +1,5 @@
 export function event(stage) {
-    let events = {}
+    var events = {}
 
     return {
         // 添加
@@ -14,7 +14,7 @@ export function event(stage) {
         },
         // 执行
         execute() {
-            for (const key in events) {
+            for (var key in events) {
                 events[key].call(stage)
             }
         }

@@ -1,98 +1,92 @@
-import { Game } from "../Game/Game.js"
+import Game from "../Game/Game.js"
 
-export function graphics(unit) {
-    // 声明常量
-    const ctx = Game.context
-    const floor = Math.floor
+export function graphics(sprite) {
+    var context = Game.canvas.getContext('2d')
+    var floor = Math.floor
 
     // 初始化执行函数
-    let executor = null
+    var executor = null
 
     // 设置尺寸
-    let setSize = (width, height, sameSize) => {
-        Object.defineProperties(unit, {
-            'drawWidth': {
-                value: width
-            },
-            'drawHeight': {
-                value: height
-            }
-        })
+    var setSize = function (width, height, sameSize) {
+        // 设置精灵
+        sprite.drawWidth = width
+        sprite.drawHeight = height
 
         if (sameSize) {
-            unit.width = width
-            unit.height = height
+            sprite.width = width
+            sprite.height = height
         }
     }
 
     // 获取绘制数据
-    let getData = () => {
+    var getData = function () {
         return {
-            relX: unit.relX,
-            relY: unit.relY,
-            offsetLeft: unit.offsetLeft,
-            offsetTop: unit.offsetTop,
-            width: unit.width,
-            drawWidth: unit.drawWidth,
-            drawHeight: unit.drawHeight,
-            scale: unit.scale,
-            direction: unit.direction
+            relX: sprite.relX,
+            relY: sprite.relY,
+            offsetLeft: sprite.offsetLeft,
+            offsetTop: sprite.offsetTop,
+            width: sprite.width,
+            drawWidth: sprite.drawWidth,
+            drawHeight: sprite.drawHeight,
+            scale: sprite.scale,
+            direction: sprite.direction
         }
     }
 
     // 绘制图片
-    let drawImage = (image) => {
-        const { relX, relY, offsetLeft, offsetTop, width, drawWidth, drawHeight, scale, direction } = getData()
+    var drawImage = function (image) {
+        var { relX, relY, offsetLeft, offsetTop, width, drawWidth, drawHeight, scale, direction } = getData()
 
         // 图片方向
         if (direction === 'right') {
-            const tranlateX = floor(relX + offsetLeft)
-            const tranlateY = floor(relY + offsetTop)
-            ctx.drawImage(image, 0, 0, drawWidth, drawHeight, tranlateX, tranlateY, drawWidth * scale, drawHeight * scale)
+            var tranlateX = floor(relX + offsetLeft)
+            var tranlateY = floor(relY + offsetTop)
+            context.drawImage(image, 0, 0, drawWidth, drawHeight, tranlateX, tranlateY, drawWidth * scale, drawHeight * scale)
         } else {
-            const tranlateX = floor(Game.width - width - relX + offsetLeft)
-            const tranlateY = floor(relY + offsetTop)
+            var tranlateX = floor(Game.width - width - relX + offsetLeft)
+            var tranlateY = floor(relY + offsetTop)
 
             // 水平翻转绘制
-            drawFlip(Game.width, () => {
-                ctx.drawImage(image, 0, 0, drawWidth, drawHeight, tranlateX, tranlateY, drawWidth * scale, drawHeight * scale)
+            drawFlip(Game.width, function () {
+                context.drawImage(image, 0, 0, drawWidth, drawHeight, tranlateX, tranlateY, drawWidth * scale, drawHeight * scale)
             })
         }
     }
 
     // 绘制动画
-    let drawAnimation = (image, flip, currFrame) => {
-        const { relX, relY, offsetLeft, offsetTop, width, drawWidth, drawHeight, scale, direction } = getData()
+    var drawAnimation = function (image, flip, currFrame) {
+        var { relX, relY, offsetLeft, offsetTop, width, drawWidth, drawHeight, scale, direction } = getData()
 
         // 图片方向
         if (!flip && direction === 'right' || flip && direction === 'left') {
-            const tranlateX = floor(relX + offsetLeft)
-            const tranlateY = floor(relY + offsetTop)
-            ctx.drawImage(image, currFrame * drawWidth, 0, drawWidth, drawHeight, tranlateX, tranlateY, drawWidth * scale, drawHeight * scale)
+            var tranlateX = floor(relX + offsetLeft)
+            var tranlateY = floor(relY + offsetTop)
+            context.drawImage(image, currFrame * drawWidth, 0, drawWidth, drawHeight, tranlateX, tranlateY, drawWidth * scale, drawHeight * scale)
         } else {
-            const tranlateX = floor(Game.width - width * scale - relX + offsetLeft)
-            const tranlateY = floor(relY + offsetTop)
+            var tranlateX = floor(Game.width - width * scale - relX + offsetLeft)
+            var tranlateY = floor(relY + offsetTop)
 
             // 水平翻转绘制
-            drawFlip(Game.width, () => {
-                ctx.drawImage(image, currFrame * drawWidth, 0, drawWidth, drawHeight, tranlateX, tranlateY, drawWidth * scale, drawHeight * scale)
+            drawFlip(Game.width, function () {
+                context.drawImage(image, currFrame * drawWidth, 0, drawWidth, drawHeight, tranlateX, tranlateY, drawWidth * scale, drawHeight * scale)
             })
         }
     }
 
     // 翻转绘制
     function drawFlip(width, callback) {
-        ctx.translate(width, 0);
-        ctx.scale(-1, 1);
+        context.translate(width, 0);
+        context.scale(-1, 1);
         callback()
-        ctx.translate(width, 0);
-        ctx.scale(-1, 1);
+        context.translate(width, 0);
+        context.scale(-1, 1);
     }
 
     // 测试
     function test() {
-        Game.context.strokeStyle = 'red'
-        Game.context.strokeRect(unit.relX, unit.relY, unit.width, unit.height)
+        context.strokeStyle = 'red'
+        context.strokeRect(sprite.relX, sprite.relY, sprite.width, sprite.height)
     }
 
     // 初始化方法
@@ -100,46 +94,33 @@ export function graphics(unit) {
         // 动画
         animation(group, name, sameSize = false) {
             // 获取动画数据
-            const animation = Game.asset.get(group, name)
+            var animation = Game.asset.get(group, name)
 
             setSize(animation.width, animation.image.height, sameSize)
 
 
             // 内部属性
-            let currInterval = 0,
+            var currInterval = 0,
                 currFrame = 0
 
             // 动画属性
-            let options = Object.defineProperties({}, {
+            var options = {
                 // 动画帧数
-                'animationFrames': {
-                    value: (animation.image.width / animation.width) - 1
-                },
+                animationFrames: (animation.image.width / animation.width) - 1,
                 // 动画间隔帧
-                'animationInterval': {
-                    value: animation.interval || Game.animationInterval
-                },
+                animationInterval: animation.interval || Game.animationInterval,
                 // 动画帧宽度
-                'width': {
-                    value: animation.width
-                },
+                width: animation.width,
                 // 动画帧高度
-                'height': {
-                    value: animation.image.height
-                },
+                height: animation.image.height,
                 // 是否翻转
-                'flip': {
-                    value: animation.flip
-                },
+                flip: animation.flip,
                 // 完成时
-                'onComplete': {
-                    value: null,
-                    writable: true
-                }
-            })
+                onComplete: null
+            }
 
             // 绘制函数
-            executor = () => {
+            executor = function () {
                 // 绘制动画
                 drawAnimation(animation.image, options.flip, currFrame)
 
@@ -174,63 +155,55 @@ export function graphics(unit) {
         },
         // 绘制
         draw(callback) {
-            executor = () => callback.call(unit, Game.context)
+            executor = function () {
+                callback.call(sprite, context)
+            }
         },
         // 图片
         image(group, name, sameSize = false) {
             // 获取图片数据
-            const image = Game.asset.get(group, name)
+            var image = Game.asset.get(group, name)
 
             setSize(image.width, image.height, sameSize)
 
             // 绘制函数
-            executor = () => {
+            executor = function () {
                 drawImage(image)
             }
         },
         // 混合(混合和绘制的区别在于混合可以清除画布再继续绘制而不会影响原画布)
         mix(type, callback) {
-            const mixCanvas = Game.canvas.cloneNode()
-            const ctx = mixCanvas.getContext('2d')
-            let mixImage = new Image();
+            var mixCanvas = Game.canvas.cloneNode()
+            var ctx = mixCanvas.getContext('2d')
+            var mixImage = new Image();
             if (type === 'static') {
                 ctx.clearRect(0, 0, Game.width, Game.height)
                 callback(ctx)
                 mixImage.src = mixCanvas.toDataURL("image/png");
-                executor = () => {
-                    Game.context.drawImage(mixImage, 0, 0)
+                executor = function () {
+                    context.drawImage(mixImage, 0, 0)
                 }
             } else if (type === 'dynamic') {
-                executor = () => {
+                executor = function () {
                     ctx.clearRect(0, 0, Game.width, Game.height)
                     callback(ctx)
                     mixImage.src = mixCanvas.toDataURL("image/png");
-                    Game.context.drawImage(mixImage, 0, 0)
+                    context.drawImage(mixImage, 0, 0)
                 }
             }
         },
         // 粒子
         particle(group, name, interval, alphaRange, scaleRange) {
-            const image = Game.asset.get(group, name)
+            var image = Game.asset.get(group, name)
 
             // 设置精灵尺寸(粒子精灵没有宽度和高度)
-            Object.defineProperties(unit, {
-                'width': {
-                    value: 0
-                },
-                'height': {
-                    value: 0
-                },
-                'drawWidth': {
-                    value: image.width
-                },
-                'drawHeight': {
-                    value: image.height
-                }
-            })
-
+            sprite.width = 0
+            sprite.height = 0
+            sprite.drawWidth = image.width
+            sprite.drawHeight = image.height
+            
             // 设置粒子属性
-            let nextAlpha, nextscale
+            var nextAlpha, nextscale
 
             // 检查粒子是否有透明度变化
             if (alphaRange) {
@@ -240,24 +213,24 @@ export function graphics(unit) {
             // 检查粒子是否有尺寸变化
             if (scaleRange) {
                 nextscale = (scaleRange[1] - scaleRange[0]) / interval
-                unit.scale = scaleRange[1]
+                sprite.scale = scaleRange[1]
             }
 
-            executor = () => {
+            executor = function () {
                 // 透明度变化
                 if (nextAlpha != null) {
-                    if (unit.alpha + nextAlpha <= alphaRange[0] || unit.alpha + nextAlpha >= alphaRange[1]) {
+                    if (sprite.alpha + nextAlpha <= alphaRange[0] || sprite.alpha + nextAlpha >= alphaRange[1]) {
                         nextAlpha = -nextAlpha
                     }
-                    unit.alpha += nextAlpha
+                    sprite.alpha += nextAlpha
                 }
 
                 // 尺寸变化
                 if (nextscale != null) {
-                    if (unit.scale + nextscale <= scaleRange[0] || unit.scale + nextscale >= scaleRange[1]) {
+                    if (sprite.scale + nextscale <= scaleRange[0] || sprite.scale + nextscale >= scaleRange[1]) {
                         nextscale = - nextscale
                     }
-                    unit.scale += nextscale
+                    sprite.scale += nextscale
                 }
 
                 drawImage(image)
@@ -265,17 +238,17 @@ export function graphics(unit) {
         },
         // 渲染
         render() {
-            const gw = Game.width
-            const gh = Game.height
-            const ux = unit.relX
-            const uy = unit.relY
-            const uw = unit.width
-            const uh = unit.height
-            const scale = unit.scale
+            var gw = Game.width
+            var gh = Game.height
+            var ux = sprite.relX
+            var uy = sprite.relY
+            var uw = sprite.width
+            var uh = sprite.height
+            var scale = sprite.scale
             if (ux + uw * scale < 0 || ux > gw || uy + uh * scale < 0 || uy > gh) {
                 return
             }
-            Game.context.globalAlpha = unit.alpha
+            context.globalAlpha = sprite.alpha
             executor && executor()
             Game.test && test()
         },

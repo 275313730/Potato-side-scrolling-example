@@ -1,7 +1,7 @@
-import { Game } from "../Game/Game.js"
+import Game from "../Game/Game.js"
 
 export function camera(stage) {
-    let camera = {
+    var camera = {
         x: 0,
         y: 0,
         scale: 1,
@@ -9,11 +9,11 @@ export function camera(stage) {
         movement: null
     }
     // 创建镜头移动函数
-    let createMovement = (x, y, time, callback, disable = true) => {
+    var createMovement = function (x, y, time, callback, disable = true) {
         // 计算数据
-        let frames = time * Game.frames || 1
-        let perX = x / frames
-        let perY = y / frames
+        var frames = time * Game.frames || 1
+        var perX = x / frames
+        var perY = y / frames
 
         if (perX === 0 && perY === 0) {
             return
@@ -23,8 +23,8 @@ export function camera(stage) {
         camera.follow = null
 
         // 定义常量
-        const STAGE_WIDTH = stage.width
-        const GAME_WIDTH = Game.width
+        var STAGE_WIDTH = stage.width
+        var GAME_WIDTH = Game.width
 
         // 调整相机位置
         if (camera.x < 0) {
@@ -35,17 +35,17 @@ export function camera(stage) {
         }
 
         // 移动计数
-        let count = 0
+        var count = 0
 
         // 禁用单位
         if (disable === true) {
-            Game.unit.travel(unit => {
+            Game.unit.travel(function (unit) {
                 unit.disabled = true
             })
         }
 
         // 修改镜头移动函数
-        camera.movement = () => {
+        camera.movement = function () {
             // 相机移动
             camera.x += perX
             camera.y += perY
@@ -60,7 +60,7 @@ export function camera(stage) {
 
                 // 启用精灵
                 if (disable === true) {
-                    Game.unit.travel(unit => {
+                    Game.unit.travel(function (unit) {
                         unit.disabled = false
                     })
                 }
@@ -73,11 +73,11 @@ export function camera(stage) {
     }
 
     // 计算镜头位置
-    let cameraCal = () => {
-        const follow = camera.follow
+    var cameraCal = function () {
+        var follow = camera.follow
         // 当相机跟随精灵时
         if (follow) {
-            const position = borderCal(follow)
+            var position = borderCal(follow)
             camera.x = position.x
             camera.y = position.y
         } else {
@@ -88,15 +88,15 @@ export function camera(stage) {
 
     // 计算边界问题
     function borderCal(unit) {
-        const ux = unit.x
-        const uy = unit.y
-        const uw = unit.width
-        const uh = unit.height
-        const sw = stage.width
-        const sh = stage.height
-        const gw = Game.width
-        const gh = Game.height
-        let x, y
+        var ux = unit.x
+        var uy = unit.y
+        var uw = unit.width
+        var uh = unit.height
+        var sw = stage.width
+        var sh = stage.height
+        var gw = Game.width
+        var gh = Game.height
+        var x, y
 
         // 相机处于舞台宽度范围内才会跟随精灵x变化，否则固定值
         if (ux < (gw - uw) / 2) {
@@ -125,12 +125,12 @@ export function camera(stage) {
             if (unit === camera.follow) { return }
             camera.follow = unit
         },
-        // 获取镜头数据
-        get() {
+        // 更新镜头数据
+        update() {
             // 计算镜头数据
             cameraCal()
-            // 返回镜头数据(只读)
-            return Object.assign({}, camera)
+            // 返回镜头数据
+            return camera
         },
         // 移动
         move(x, y, time, callback) {
@@ -139,7 +139,7 @@ export function camera(stage) {
         // 移动到
         moveTo(unit, time, callback) {
             // 边界计算
-            const { x, y } = borderCal(unit)
+            var { x, y } = borderCal(unit)
 
             createMovement((x - camera.x), (y - camera.y), time, callback)
         },

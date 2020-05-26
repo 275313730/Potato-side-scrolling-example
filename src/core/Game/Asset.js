@@ -1,13 +1,15 @@
-export function asset(imagePath, audioPath) {
-    let loadings = []
-    let assets = {}
+export function asset(Game) {
+    var imagePath = Game.imagePath
+    var audioPath = Game.audioPath
+    var loadings = []
+    var assets = {}
 
     return {
         // new Stage()时会自动调用该函数
         allLoaded(callback) {
             if (loadings.length > 0) {
                 Promise.all(loadings)
-                    .then(() => callback())
+                    .then(function () { callback() })
             } else {
                 callback()
             }
@@ -18,33 +20,30 @@ export function asset(imagePath, audioPath) {
         },
         // 载入资源
         load(options) {
-            const type = options.type
-            const group = options.group
-            const name = options.name
-            const url = options.url
+            var type = options.type
+            var group = options.group
+            var name = options.name
+            var url = options.url
 
             if (!assets[group]) { assets[group] = {} }
             if (assets[group][name]) { return }
 
             if (type === 'image') {
-                const image = new Image()
-                image.src = imagePath + url
-
-                loadings.push(new Promise(resolve => {
-                    image.onload = () => {
+                var image = new Image()
+                loadings.push(new Promise(function (resolve) {
+                    image.onload = function () {
                         assets[group][name] = image
                         resolve(true)
                     }
                 }))
+                image.src = imagePath + url
                 return
             }
 
             if (type === 'animation') {
-                const image = new Image()
-                image.src = imagePath + url
-
-                loadings.push(new Promise(resolve => {
-                    image.onload = () => {
+                var image = new Image()
+                loadings.push(new Promise(function (resolve) {
+                    image.onload = function () {
                         assets[group][name] = {
                             image,
                             width: options.width,
@@ -54,6 +53,7 @@ export function asset(imagePath, audioPath) {
                         resolve(true)
                     }
                 }))
+                image.src = imagePath + url
                 return
             }
 

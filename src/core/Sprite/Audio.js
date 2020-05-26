@@ -1,42 +1,45 @@
-import { Game } from "../Game/Game.js"
+import Game from "../Game/Game.js"
 
-export function audio(unit) {
-    let music = { audio: null }
-    let sounds = []
+export function audio(sprite) {
+    var music = { audio: null }
+    var sounds = []
 
     return {
-        // 计算音量
-        cal() {
+        // 更新音频
+        update() {
+            // 判断是否绑定音频
             if (!music.audio && sounds.length === 0) {
                 return
             }
 
-            const relX = unit.relX
-            const relY = unit.relY
-            const distance = Math.sqrt(relX * relX + relY * relY)
+            // 计算相对距离
+            var relX = sprite.relX
+            var relY = sprite.relY
+            var distance = Math.sqrt(relX ** 2 + relY ** 2)
 
+            // 音乐
             if (music.audio && music.range > 0) {
-                const range = music.range
-                const audio = music.audio
-
+                var range = music.range
+                var audio = music.audio
                 setVolume(audio, range, music.defalutVolume, distance)
             }
 
-            for (let i = 0; i < sounds.length; i++) {
-                const sound = sounds[i]
-                const range = sound.range
-                const audio = sound.audio
-
+            // 音效
+            for (var i = 0; i < sounds.length; i++) {
+                var sound = sounds[i]
+                var range = sound.range
+                var audio = sound.audio
+                // 移除播放完的音效
                 if (audio.ended === true) {
                     sounds.splice(i, 1)
                     audio.remove()
                     i--
                     continue
                 }
-
                 setVolume(audio, range, sound.defalutVolume, distance)
             }
 
+            // 设置音量
             function setVolume(audio, range, defalutVolume, distance) {
                 if (range) {
                     if (distance >= range) {
@@ -49,17 +52,18 @@ export function audio(unit) {
         },
         // 播放
         play(options) {
-            const type = options.type
-            const group = options.group
-            const name = options.name
-            const range = options.range || 0
-            const volume = options.volume || 1
-            const startTime = options.startTime || 0
-            const loop = options.loop || true
-            const newAudio = Game.asset.get(group, name)
+            var type = options.type
+            var group = options.group
+            var name = options.name
+            var range = options.range || 0
+            var volume = options.volume || 1
+            var startTime = options.startTime || 0
+            var loop = options.loop || true
+            var newAudio = Game.asset.get(group, name)
 
+            // 当类型为音效时，克隆一个独立节点来播放
             if (type === 'sound') {
-                const newSound = newAudio.cloneNode()
+                var newSound = newAudio.cloneNode()
 
                 newSound.volume = volume
                 newSound.currentTime = startTime
@@ -74,6 +78,7 @@ export function audio(unit) {
                 return
             }
 
+            // 当类型为音乐时，默认循环播放
             if (type === 'music') {
                 if (music.audio !== newAudio) {
                     music.audio = newAudio
@@ -92,11 +97,11 @@ export function audio(unit) {
             music.pause()
             music.currentTime = 0
         },
-        delAll() {
+        clear() {
             if (music.audio) {
                 music.audio.remove()
             }
-            sounds.forEach(sound => {
+            sounds.forEach(function (sound) {
                 sound.audio.remove()
             })
         }

@@ -1,5 +1,5 @@
-export function event(unit) {
-    let events = {}
+export function event(sprite) {
+    var events = {}
 
     return {
         // 添加
@@ -23,9 +23,9 @@ export function event(unit) {
         // 执行
         execute() {
             // disabled时禁用事件
-            if (unit.disabled) { return }
-            for (const key in events) {
-                events[key].call(unit)
+            if (sprite.disabled) { return }
+            for (var key in events) {
+                events[key].call(sprite)
             }
         }
     }

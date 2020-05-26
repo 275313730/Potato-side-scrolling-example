@@ -1,14 +1,14 @@
 export function unit(Game) {
-    let units = {}
+    var units = {}
     // 图层数组
-    let layers = []
+    var layers = []
     // 排序
     function sort() {
-        let newUnits = {}
+        var newUnits = {}
         // 根据图层值排序
-        layers.forEach(layer => {
-            for (const key in units) {
-                const unit = units[key]
+        layers.forEach(function (layer) {
+            for (var key in units) {
+                var unit = units[key]
                 if (unit.layer === layer) {
                     newUnits[unit.id] = unit
                     delete units[key]
@@ -26,21 +26,15 @@ export function unit(Game) {
                 throw new Error(`Sprite '${newUnit.id}' exists.`)
             }
 
-            // Game和Stage的宽高(只读)
-            Object.defineProperties(newUnit, {
-                'game': {
-                    value: {
-                        width: Game.width,
-                        height: Game.height
-                    }
-                },
-                'stage': {
-                    value: {
-                        width: Game.stage.width,
-                        height: Game.stage.height
-                    }
-                }
-            })
+            // Game和Stage的宽高
+            newUnit.game = {
+                width: Game.width,
+                height: Game.height
+            }
+            newUnit.stage = {
+                width: Game.stage.width,
+                height: Game.stage.height
+            }
 
             // 加入单位组
             units[newUnit.id] = newUnit
@@ -60,7 +54,7 @@ export function unit(Game) {
         },
         // 删除
         del(id) {
-            const unit = units[id]
+            var unit = units[id]
             if (!unit) {
                 throw new Error(`Unit ${id} doesn't exist`)
             }
@@ -72,7 +66,7 @@ export function unit(Game) {
             delete Game.userEvents[id]
 
             // 解绑单位音频
-            unit.audio.delAll()
+            unit.audio.clear()
 
             // 删除单位
             delete units[id]
@@ -81,18 +75,13 @@ export function unit(Game) {
             unit.destroyed && unit.destroyed()
         },
         // 删除所有
-        delAll(includeGlobal) {
-            if (includeGlobal) {
-                for (const key in units) {
-                    this.del(key)
+        clear(includeGlobal) {
+            for (var key in units) {
+                var unit = units[key]
+                if (!includeGlobal && unit.global) {
+                    continue
                 }
-            } else {
-                let unGlobal = this.filter(unit => {
-                    return !unit.global
-                })
-                for (const key in unGlobal) {
-                    this.del(key)
-                }
+                this.del(key)
             }
         },
         // 查找
@@ -101,10 +90,10 @@ export function unit(Game) {
         },
         // 过滤
         filter(callback) {
-            let newUnits = {}
+            var newUnits = {}
 
-            for (const key in units) {
-                const unit = units[key]
+            for (var key in units) {
+                var unit = units[key]
                 if (callback(unit) === true) {
                     newUnits[key] = unit
                 }
@@ -114,7 +103,7 @@ export function unit(Game) {
         },
         // 遍历
         travel(callback) {
-            for (const key in units) {
+            for (var key in units) {
                 // 回调函数返回false时停止遍历
                 if (callback(units[key]) === false) {
                     break
