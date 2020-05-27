@@ -1,5 +1,5 @@
 // modules
-import { Sprite } from "../core/Potato.js";
+import { Game, Sprite } from "../core/Potato.js";
 
 // sprites
 import { bgImg } from "../sprites/BgImg.js";
@@ -14,12 +14,13 @@ import { gravity } from "../events/Gravity.js";
 import { pig } from "../sprites/Pig.js";
 import { hit } from "../events/Hit.js";
 import { deadCheck } from "../events/DeadCheck.js";
+import { ai } from "../events/AI.js";
 
 export function normal() {
     return {
         created() {
             // 创建背景图片
-            const newBG = new Sprite(bgImg('test'))
+            const newBG = new Sprite(bgImg("test"))
             this.width = newBG.width
             this.height = newBG.height
 
@@ -39,7 +40,7 @@ export function normal() {
                 [8, 0, 19, 20, 1]
             ]
             blocksData.forEach(data => {
-                blocks.push(new Sprite(block('block', data)))
+                blocks.push(new Sprite(block("block", data)))
             })
 
             // 创建跳台
@@ -54,33 +55,36 @@ export function normal() {
                 [17, 17, 1]
             ]
             flatsData.forEach(data => {
-                blocks.push(new Sprite(block('flat', data)))
+                blocks.push(new Sprite(block("flat", data)))
             })
 
             // 创建玩家
-            const newPlayer = new Sprite(player())
+            const newPlayer = new Sprite(player(Game.isMobile))
             this.camera.follow(newPlayer)
 
             //  创建经验条
             new Sprite(exp())
 
             // 创建猪
-            const pigsData = [
-                [1, 150, 78, 'left'],
-                [2, 200, 334, 'right'],
-                [3, 280, 590, 'right']
+            const pigs = [
+                [1, 150, 78, "left"],
+                [2, 200, 334, "right"],
+                [3, 280, 590, "right"]
             ]
-            pigsData.forEach(data => {
-                new Sprite(pig(...data))
+            pigs.forEach((data, index) => {
+                pigs[index] = new Sprite(pig(...data))
             })
 
-            new Sprite(touch())
+            if (Game.isMobile) {
+                new Sprite(touch())
+            }
 
             // 添加场景事件
-            this.event.add('collie', collie, newPlayer, blocks)
-            this.event.add('gravity', gravity, newPlayer, blocks)
-            this.event.add('hit', hit(newPlayer))
-            this.event.add('deadCheck', deadCheck)
+            this.event.add("collie", collie, newPlayer, blocks)
+            this.event.add("gravity", gravity, newPlayer, blocks)
+            this.event.add("hit", hit(newPlayer))
+            this.event.add("deadCheck", deadCheck)
+            this.event.add("ai", ai, newPlayer, pigs)
         }
     }
 }

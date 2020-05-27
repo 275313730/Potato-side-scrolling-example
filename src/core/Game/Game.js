@@ -32,7 +32,7 @@ Game.init = function (options) {
     this.userEvents = {};
     // 动画间隔帧(每隔n帧绘制下一个关键帧)
     this.animationInterval = options.animationInterval || 16;
-    // 测试(显示精灵外框)
+    // 测试(显示单位外框)
     this.test = false;
     // 是否移动端
     this.isMobile = isMobile();
@@ -46,31 +46,31 @@ Game.init = function (options) {
     this.unit = unit(this);
     this.mix = function (Class, func) {
         if (!Class["mixins"]) {
-            Class["mixins"] = []
+            Class["mixins"] = [];
         }
-        Class["mixins"].push(func)
+        Class["mixins"].push(func);
     }
 
     // 设置canvas宽高
     this.canvas.setAttribute("width", this.width + "px");
     this.canvas.setAttribute("height", this.height + "px");
 
-    var addEventListener = window.addEventListener
+    var addEventListener = window.addEventListener;
 
     // 键盘事件
     addEventListener("keydown", function (e) {
-        e.stopPropagation()
-        e.preventDefault()
+        e.stopPropagation();
+        e.preventDefault();
         var key = e.key
         if (Game.key !== key) {
-            Game.key = key
-            executeUserEvents("keydown", key)
+            Game.key = key;
+            executeUserEvents("keydown", key);
         }
     });
     addEventListener("keyup", function (e) {
         e.stopPropagation();
         e.preventDefault();
-        var key = e.key
+        var key = e.key;
         if (Game.key === key) {
             Game.key = null;
         }
@@ -122,7 +122,7 @@ function calMouse(e) {
         x: (e.clientX - canvas.offsetLeft) / scale,
         y: (e.clientY - canvas.offsetTop) / scale,
         button: e.button
-    }
+    };
 }
 
 // 计算触控数据
@@ -137,7 +137,7 @@ function calTouch(e) {
             y: (touch.clientY - canvas.offsetTop) / scale,
             id: touch.identifier,
             type: e.type
-        })
+        });
     }
     return touches;
 }

@@ -9,13 +9,29 @@ export function titleImg() {
         data: {
             lastY: null
         },
+        methods: {
+            press() {
+                if (this.y <= this.lastY) {
+                    new Stage(normal())
+                } else {
+                    this.y = this.lastY
+                }
+            }
+        },
         created() {
             this.graphics.image('title', 'title', true)
             this.x = (this.game.width - this.width) / 2
             this.y = this.game.height
             this.lastY = (this.game.height - this.height) / 3 + 20
             this.event.add('move', move)
-            this.userEvent.watch('touchend', touchend)
+            this.userEvent.watch('touchend', () => {
+                this.press()
+            })
+            this.userEvent.watch("keydown", key => {
+                if (key === " ") {
+                    this.press()
+                }
+            })
         }
     }
 
@@ -25,14 +41,6 @@ export function titleImg() {
         } else {
             this.event.del('move')
             this.$pox.set('start', () => { return true })
-        }
-    }
-
-    function touchend(e) {
-        if (this.y <= this.lastY) {
-            new Stage(normal())
-        } else {
-            this.y = this.lastY
         }
     }
 }

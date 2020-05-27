@@ -13,7 +13,7 @@ export function hit(player) {
                     this.geometry.distance('x', player, pig) > 0) {
                     if ((this.geometry.onLeft(player, pig) && player.direction === 'right') ||
                         (this.geometry.onRight(player, pig) && player.direction === 'left')) {
-                        pig.hit()
+                        pig.$potate.setState("hit")
                     }
                 }
             }
