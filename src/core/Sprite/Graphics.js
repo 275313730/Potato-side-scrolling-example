@@ -1,7 +1,6 @@
 import Game from "../Game/Game.js"
 
 export function graphics(unit) {
-    ;
     var context = Game.canvas.getContext('2d');
     var floor = Math.floor;
 
@@ -28,6 +27,7 @@ export function graphics(unit) {
             offsetLeft: unit.offsetLeft,
             offsetTop: unit.offsetTop,
             width: unit.width,
+            height: unit.height,
             drawWidth: unit.drawWidth,
             drawHeight: unit.drawHeight,
             scale: unit.scale,
@@ -38,14 +38,12 @@ export function graphics(unit) {
     // 绘制图片
     var drawImage = function (image) {
         var { relX, relY, offsetLeft, offsetTop, width, drawWidth, drawHeight, scale, direction } = getData();
-
-        // 图片方向
         if (direction === 'right') {
             var tranlateX = floor(relX + offsetLeft);
             var tranlateY = floor(relY + offsetTop);
             context.drawImage(image, 0, 0, drawWidth, drawHeight, tranlateX, tranlateY, drawWidth * scale, drawHeight * scale);
         } else {
-            var tranlateX = floor(Game.width - width - relX + offsetLeft);
+            var tranlateX = floor(Game.width - width * scale - relX + offsetLeft);
             var tranlateY = floor(relY + offsetTop);
 
             // 水平翻转绘制
@@ -56,22 +54,41 @@ export function graphics(unit) {
     }
 
     // 绘制动画
-    var drawAnimation = function (image, flip, currFrame) {
+    var drawAnimation = function (image, currFrame, flip) {
         var { relX, relY, offsetLeft, offsetTop, width, drawWidth, drawHeight, scale, direction } = getData();
 
         // 图片方向
-        if (!flip && direction === 'right' || flip && direction === 'left') {
+        if (Game.mode === 0) {
+            if (!flip && direction === 'right' || flip && direction === 'left') {
+                var tranlateX = floor(relX + offsetLeft);
+                var tranlateY = floor(relY + offsetTop);
+                context.drawImage(image, currFrame * drawWidth, 0, drawWidth, drawHeight, tranlateX, tranlateY, drawWidth * scale, drawHeight * scale);
+            } else {
+                var tranlateX = floor(Game.width - width * scale - relX + offsetLeft);
+                var tranlateY = floor(relY + offsetTop);
+
+                // 水平翻转绘制
+                drawFlip(Game.width, function () {
+                    context.drawImage(image, currFrame * drawWidth, 0, drawWidth, drawHeight, tranlateX, tranlateY, drawWidth * scale, drawHeight * scale);
+                })
+            }
+        } else {
             var tranlateX = floor(relX + offsetLeft);
             var tranlateY = floor(relY + offsetTop);
-            context.drawImage(image, currFrame * drawWidth, 0, drawWidth, drawHeight, tranlateX, tranlateY, drawWidth * scale, drawHeight * scale);
-        } else {
-            var tranlateX = floor(Game.width - width * scale - relX + offsetLeft);
-            var tranlateY = floor(relY + offsetTop);
-
-            // 水平翻转绘制
-            drawFlip(Game.width, function () {
-                context.drawImage(image, currFrame * drawWidth, 0, drawWidth, drawHeight, tranlateX, tranlateY, drawWidth * scale, drawHeight * scale);
-            })
+            switch (direction) {
+                case "down":
+                    context.drawImage(image, currFrame * drawWidth, 0, drawWidth, drawHeight, tranlateX, tranlateY, drawWidth * scale, drawHeight * scale);
+                    break;
+                case "left":
+                    context.drawImage(image, currFrame * drawWidth, drawHeight, drawWidth, drawHeight, tranlateX, tranlateY, drawWidth * scale, drawHeight * scale);
+                    break;
+                case "right":
+                    context.drawImage(image, currFrame * drawWidth, drawHeight * 2, drawWidth, drawHeight, tranlateX, tranlateY, drawWidth * scale, drawHeight * scale);
+                    break;
+                case "up":
+                    context.drawImage(image, currFrame * drawWidth, drawHeight * 3, drawWidth, drawHeight, tranlateX, tranlateY, drawWidth * scale, drawHeight * scale);
+                    break;
+            }
         }
     }
 
@@ -97,32 +114,63 @@ export function graphics(unit) {
             // 获取动画数据
             var animation = Game.asset.get(group, name);
 
-            setSize(animation.width, animation.image.height, sameSize);
+            if (Game.mode === 0) {
+                setSize(animation.image.width / animation.frame, animation.image.height, sameSize);
+                // 动画属性
+                var options = {
+                    // 动画帧数
+                    animationFrames: animation.frame,
+                    // 动画间隔帧
+                    animationInterval: animation.interval || Game.animationInterval,
+                    // 动画帧宽度
+                    width: unit.drawWidth,
+                    // 动画帧高度
+                    height: unit.drawHeight,
+                    // 是否翻转
+                    flip: animation.flip,
+                    // 完成时
+                    onComplete: null,
+                };
+            } else {
+                setSize(animation.image.width / 4, animation.image.height / 4, sameSize);
+                // 动画属性
+                var options = {
+                    // 动画帧数
+                    animationFrames: 4,
+                    // 动画间隔帧
+                    animationInterval: animation.interval || Game.animationInterval,
+                    // 动画帧宽度
+                    width: unit.drawWidth,
+                    // 动画帧高度
+                    height: unit.drawHeight,
+                    // 完成时
+                    onComplete: null,
+                    // 播放
+                    play() {
+                        playing = true
+                    },
+                    // 停止
+                    stop() {
+                        playing = false
+                        currFrame = 0
+                    }
+                };
+            }
 
-            // 动画属性
-            var options = {
-                // 动画帧数
-                animationFrames: (animation.image.width / animation.width) - 1,
-                // 动画间隔帧
-                animationInterval: animation.interval || Game.animationInterval,
-                // 动画帧宽度
-                width: animation.width,
-                // 动画帧高度
-                height: animation.image.height,
-                // 是否翻转
-                flip: animation.flip,
-                // 完成时
-                onComplete: null
-            };
 
             // 绘制函数使用的变量
             var currInterval = 0;
             var currFrame = 0;
+            var playing = Game.mode === 0 ? true : false;
 
             // 绘制函数
             executor = function () {
                 // 绘制动画
-                drawAnimation(animation.image, options.flip, currFrame);
+                drawAnimation(animation.image, currFrame, options.flip);
+
+                if (!playing) {
+                    return;
+                }
 
                 // 动画间隔帧增加
                 currInterval++;
@@ -145,6 +193,8 @@ export function graphics(unit) {
                     }
                 }
             }
+
+            unit.animation = options;
 
             // 返回数据
             return options;

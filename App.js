@@ -20,7 +20,8 @@ import { potate } from "./src/mixins/Potate.js";
         path: {
             image: './imgs/',
             audio: './audio/'
-        }
+        },
+        mode: 0
     })
 
     // 载入标题图片
@@ -35,25 +36,28 @@ import { potate } from "./src/mixins/Potate.js";
     const roles = [
         {
             group: 'player',
-            width: 78,
             interval: 8,
             path: 'kingHuman/',
             animations: [
                 {
                     url: 'Idle.png',
-                    name: 'idle'
+                    name: 'idle',
+                    frame: 11
                 },
                 {
                     url: 'Walk.png',
-                    name: 'walk'
+                    name: 'walk',
+                    frame: 8
                 },
                 {
                     url: 'Attack.png',
-                    name: 'attack'
+                    name: 'attack',
+                    frame: 3
                 },
                 {
                     url: 'Hit.png',
-                    name: 'hit'
+                    name: 'hit',
+                    frame: 2
                 }
             ],
             images: [
@@ -73,30 +77,34 @@ import { potate } from "./src/mixins/Potate.js";
         },
         {
             group: 'pig',
-            width: 34,
             interval: 8,
             flip: true,
             path: 'pig/',
             animations: [
                 {
                     url: 'Idle.png',
-                    name: 'idle'
+                    name: 'idle',
+                    frame: 11
                 },
                 {
                     url: 'Walk.png',
-                    name: 'walk'
+                    name: 'walk',
+                    frame: 6
                 },
                 {
                     url: 'Attack.png',
-                    name: 'attack'
+                    name: 'attack',
+                    frame: 5
                 },
                 {
                     url: 'Hit.png',
-                    name: 'hit'
+                    name: 'hit',
+                    frame: 2
                 },
                 {
                     url: 'Dead.png',
-                    name: 'dead'
+                    name: 'dead',
+                    frame: 4
                 }
             ],
             images: [
@@ -124,7 +132,7 @@ import { potate } from "./src/mixins/Potate.js";
                 group: role.group,
                 name: animation.name,
                 url: role.path + animation.url,
-                width: role.width,
+                frame: animation.frame,
                 interval: role.interval,
                 flip: role.flip
             })

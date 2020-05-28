@@ -44,12 +44,19 @@ export function asset(Game) {
                 var image = new Image();
                 loadings.push(new Promise(function (resolve) {
                     image.onload = function () {
-                        assets[group][name] = {
-                            image,
-                            width: options.width,
-                            interval: options.interval,
-                            flip: options.flip
-                        };
+                        switch (Game.mode) {
+                            case 0:
+                                assets[group][name] = {
+                                    image,
+                                    frame: options.frame,
+                                    interval: options.interval,
+                                    flip: options.flip
+                                };
+                                break;
+                            case 1:
+                                assets[group][name] = { image };
+                                break;
+                        }
                         resolve(true);
                     }
                 }));

@@ -26,6 +26,8 @@ Game.init = function (options) {
     this.height = options.height;
     // 缩放
     this.scale = this.canvas.clientHeight / this.height;
+    // 游戏模式
+    this.mode = options.mode;
     // 键盘状态
     this.key = null;
     // 用户事件
@@ -61,7 +63,7 @@ Game.init = function (options) {
     addEventListener("keydown", function (e) {
         e.stopPropagation();
         e.preventDefault();
-        var key = e.key
+        var key = e.key;
         if (Game.key !== key) {
             Game.key = key;
             executeUserEvents("keydown", key);
