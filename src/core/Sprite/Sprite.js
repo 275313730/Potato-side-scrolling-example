@@ -55,14 +55,7 @@ function Sprite(options) {
     this.scale = config.scale == null ? 1 : config.scale;
 
     // direction 决定图片的方向
-    switch (Game.mode) {
-        case 0:
-            this.direction = config.direction || 'right';
-            break;
-        case 1:
-            this.direction = config.direction || 'down';
-            break;
-    }
+    this.direction = config.direction || 'right';
 
     // layer 决定图片上下关系，layer越大，单位越晚渲染
     this.layer = config.layer || 0;
