@@ -20,8 +20,7 @@ import { potate } from "./src/mixins/Potate.js";
         path: {
             image: './imgs/',
             audio: './audio/'
-        },
-        mode: 0
+        }
     })
 
     // 载入标题图片
